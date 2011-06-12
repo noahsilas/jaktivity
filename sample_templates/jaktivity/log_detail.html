@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Log Detail{% endblock title %}
+
+{% block content %}
+
+<h1>Log Entry {{ log.pk }}</h1>
+
+<h2>General Info</h2>
+
+<p>{{ log.message|safe }}</p>
+
+<table class="logdata">
+    {% if log.user %}
+    <tr><th>User</th>
+        <td>{{ log.user.username }} <span class="ipaddr">({{ log.ip_address }})</span></td>
+    </tr>
+    {% else %}
+    <tr><th>IP Address</th>
+        <td>{{ log.ip_address }}</span></td>
+    </tr>
+    {% endif %}
+
+    <tr><th>Date</th>
+        <td>{{ log.date }}</td>
+    </tr>
+
+    {% if log.notes.count %}
+    <tr><th>Notes</th>
+        <td><ul>{% for note in log.notes.all %}
+                <li>{{ note.body|safe }}</li>{% endfor %}
+            </ul>
+        </td>
+    </tr>
+    {% endif %}
+
+</table>
+
+
+<h2>Request</h2>
+<table class="logdata">
+    <tr><th>Action</th>
+        <td><span class="method">{{ log.method }}</span> <span class="host">{{ log.host }}</span><span class="path">{{log.path}}</span></td>
+    </tr>
+
+    {% for header in log.headers.all %}
+    <tr class="http-header"><th>{{ header.name }}</th>
+        <td>{{ header.value }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% if log.http_get_parameters.count %}
+<br />
+<h3>GET Parameters</h3>
+<table class="logdata">
+    {% for param in log.http_get_parameters %}
+    <tr><th>{{ param.name }}</th>
+        <td>{{ param.value }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+{% if log.http_post_parameters.count %}
+<br />
+<h3>POST Parameters</h3>
+<table class="logdata">
+    {% for param in log.http_post_parameters %}
+    <tr><th>{{ param.name }}</th>
+        <td>{{ param.value }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+
+<h2>View</h2>
+<table class="logdata">
+    <tr><th>View Function</th>
+        <td>{{ log.view }}</td>
+    </tr>
+
+    <tr><th>Parameters</th>
+        <td>{% spaceless %}
+            {% for param in log.view_positional_parameters %}
+                <span class="view_param">{{param.value}}</span>
+                {% if not forloop.last %}<span class="seperator">, </span>{% endif %}
+            {% endfor %}
+            {% if log.view_positional_parameters and log.view_keyword_parameters %}<span class="seperator">, </span>{% endif %}
+            {% for param in log.view_keyword_parameters %}
+                <span class="view_param_name">{{ param.name }}</span>=<span class="view_param">{{param.value}}</span>
+                {% if not forloop.last %}<span class="seperator">, </span>{% endif %}
+            {% endfor %}
+            {% endspaceless %}
+        </td>
+    </tr>
+</table>
+
+
+<h2>Response</h2>
+<table class="logdata">
+    <tr><th>Response Code</th>
+        <td>{{ log.response_status }}</td>
+    </tr>
+
+    {% if log.exception_type %}
+    <tr><th>Exception Type</th>
+        <td>{{ log.exception_type }}</td>
+    </tr>
+    {% endif %}
+</table>
+
+{% endblock content %}

@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Activity Logs{% endblock title %}
+
+{% block content %}
+<h1>Activity Logs</h1>
+
+{% if is_paginated %}
+<div class="pagination">
+    <div class="pagination-count">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</div>
+    <div class="pagination-links">
+        {% if page_obj.has_previous %}
+        <a class="prev" href="?page={{ page_obj.previous_page_number }}">&lsaquo; previous</a>
+        {% endif %}
+        {% if page_obj.has_next %}
+        <a class="next" href="?page={{ page_obj.next_page_number }}">next &raquo;</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<table>
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>View</th>
+            <th>Date</th>
+            <th>Message</th>
+            <th> </th>
+        </tr>
+    </thead>
+    <tbody>{% for log in object_list %}
+        <tr><td>{% if log.user %}{{ log.user.username }}{% else %}{{ log.ip_address }}{% endif %}</td>
+            <td>{{ log.view }}</td>
+            <td>{{ log.date|date:"M d, h:i" }}</td>
+            <td>{% if log.exception_type %}<span class="exception">{{ log.exception_type }}</span><br />{% endif %}
+                {{ log.message|safe }}</td>
+            <td><a href="{% url jaktivity:detail log.pk %}">details</a></td>
+        </tr>{% endfor %}
+    </tbody>
+</table>
+
+
+{% if is_paginated %}
+<div class="pagination">
+    <div class="pagination-count">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</div>
+    <div class="pagination-links">
+        {% if page_obj.has_previous %}
+        <a class="prev" href="?page={{ page_obj.previous_page_number }}">&lsaquo; previous</a>
+        {% endif %}
+        {% if page_obj.has_next %}
+        <a class="next" href="?page={{ page_obj.next_page_number }}">next &raquo;</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+
+
+{% endblock content %}
