@@ -113,7 +113,7 @@ class ActivityLogMiddleware(object):
         request.log.method = request.method
         request.log.host = request.get_host()
         request.log.path = request.path
-        request.log.ip_address = request.META['REMOTE_ADDR']
+        request.log.ip_address = request.META.get('HTTP_X_FORWARDED_FOR', request.META['REMOTE_ADDR'])
         if request.user.is_authenticated():
             request.log.user = request.user
 
